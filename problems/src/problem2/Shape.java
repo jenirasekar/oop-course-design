@@ -8,6 +8,6 @@ public abstract class Shape {
         System.out.println("Rectangle area: " + rectangle.calculateArea());
 
         Shape circle = new Circle(9);
-        System.out.println("Circle area: " + circle.calculateArea());
+        System.out.println("Circle area: " + String.format("%.2f", circle.calculateArea()));
     }
 }
