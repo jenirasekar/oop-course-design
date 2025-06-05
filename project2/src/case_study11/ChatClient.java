@@ -1,7 +1,9 @@
 package case_study11;
 
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ChatClient {
@@ -19,13 +21,17 @@ public class ChatClient {
         out.println(message);
     }
 
-    public void receiveMessages(Consumer<String> messageListener) {
+    // Terima 2 jenis pesan: chat dan user list
+    public void receiveMessages(Consumer<String> messageListener, Consumer<List<String>> userListListener) {
         new Thread(() -> {
             try {
                 String line;
                 while ((line = in.readLine()) != null) {
                     if (line.startsWith("MESSAGE ")) {
                         messageListener.accept(line.substring(8));
+                    } else if (line.startsWith("USERLIST ")) {
+                        String[] users = line.substring(9).split(" ");
+                        userListListener.accept(Arrays.asList(users));
                     }
                 }
             } catch (IOException e) {
