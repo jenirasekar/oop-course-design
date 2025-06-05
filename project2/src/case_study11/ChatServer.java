@@ -1,23 +1,17 @@
 package case_study11;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class ChatServer {
-    private static final int PORT = 1234;
-    private static Set<PrintWriter> clientWriters = new HashSet<>();
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(1234);
+        System.out.println("Server started on port 1234");
 
-    public static void main(String[] args) {
-        System.out.println("Chat server started...");
-        try (ServerSocket serverSocket = new ServerSocket(PORT)){
-            while (true) {
-                Socket client = serverSocket.accept();
-                System.out.println("Client connected: " + client);
-                new ClientHandler(client, clientWriters).start();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            new ClientHandler(clientSocket).start();
         }
     }
 }

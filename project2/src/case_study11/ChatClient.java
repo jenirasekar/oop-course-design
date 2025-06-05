@@ -1,37 +1,36 @@
 package case_study11;
 
 import java.io.*;
-import java.net.Socket;
+import java.net.*;
+import java.util.function.Consumer;
 
 public class ChatClient {
     private Socket socket;
-    private BufferedReader in;
     private PrintWriter out;
+    private BufferedReader in;
 
     public ChatClient(String serverAddress, int port) throws IOException {
         socket = new Socket(serverAddress, port);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
     public void sendMessage(String message) {
         out.println(message);
     }
 
-    public void receiveMessages(MessageListener listener) {
+    public void receiveMessages(Consumer<String> messageListener) {
         new Thread(() -> {
-            String msg;
             try {
-                while ((msg = in.readLine()) != null) {
-                    listener.onMessageReceived(msg);
+                String line;
+                while ((line = in.readLine()) != null) {
+                    if (line.startsWith("MESSAGE ")) {
+                        messageListener.accept(line.substring(8));
+                    }
                 }
             } catch (IOException e) {
-                listener.onMessageReceived("Disconnected from server");
+                e.printStackTrace();
             }
         }).start();
-    }
-
-    public interface MessageListener {
-        void onMessageReceived(String message);
     }
 }

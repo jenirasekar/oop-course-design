@@ -19,18 +19,20 @@ public class ChatClientGUI {
     }
 
     public ChatClientGUI(String serverAddress, int port) {
-        // prompt nickname
         nickname = JOptionPane.showInputDialog(null, "Enter your nickname:");
         if (nickname == null || nickname.trim().isEmpty()) {
             nickname = "User" + (int)(Math.random() * 1000);
         }
+
         try {
             client = new ChatClient(serverAddress, port);
+            client.sendMessage("NAME:" + nickname);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Could not connect to server.");
+            return;
         }
 
-        frame = new JFrame("Chat room");
+        frame = new JFrame("Chat - " + nickname);
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         inputField = new JTextField();
@@ -42,18 +44,24 @@ public class ChatClientGUI {
 
         frame.getContentPane().add(new JScrollPane(chatArea), BorderLayout.CENTER);
         frame.getContentPane().add(panel, BorderLayout.SOUTH);
-        frame.setSize(400, 400);
+        frame.setSize(500, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         frame.setVisible(true);
 
-        client.receiveMessages(message -> chatArea.append(message + "\n"));
+        client.receiveMessages(message -> {
+            if (message.startsWith("[SERVER]")) {
+                chatArea.append("* " + message + "\n");
+            } else {
+                chatArea.append(message + "\n");
+            }
+        });
 
-        // send message with nickname
         ActionListener sendAction = e -> {
             String msg = inputField.getText().trim();
             if (!msg.isEmpty()) {
                 String timestamp = getTimeStamp();
-                client.sendMessage("[" + timestamp + "]" + "[" + nickname + "]: " + msg);
+                client.sendMessage("[" + timestamp + "] [" + nickname + "]: " + msg);
                 inputField.setText("");
             }
         };
