@@ -3,6 +3,8 @@ package case_study11;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class ChatClientGUI {
     private JFrame frame;
@@ -11,6 +13,10 @@ public class ChatClientGUI {
     private JButton sendButton;
     private ChatClient client;
     private String nickname;
+
+    private String getTimeStamp() {
+        return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
 
     public ChatClientGUI(String serverAddress, int port) {
         // prompt nickname
@@ -46,7 +52,8 @@ public class ChatClientGUI {
         ActionListener sendAction = e -> {
             String msg = inputField.getText().trim();
             if (!msg.isEmpty()) {
-                client.sendMessage("[" + nickname + "]: " + msg);
+                String timestamp = getTimeStamp();
+                client.sendMessage("[" + timestamp + "]" + "[" + nickname + "]: " + msg);
                 inputField.setText("");
             }
         };
