@@ -21,7 +21,6 @@ public class ChatClient {
         out.println(message);
     }
 
-    // Terima 2 jenis pesan: chat dan user list
     public void receiveMessages(Consumer<String> messageListener, Consumer<List<String>> userListListener) {
         new Thread(() -> {
             try {
